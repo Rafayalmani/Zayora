@@ -17,7 +17,7 @@ const Home = () => {
         overflow: 'hidden'
       }}>
         <img 
-          src="/images/hero2.jpeg"  // Path from public folder
+          src="/images/hero4.png"  // Path from public folder
           alt="Women Fashion Collection"
           style={{ 
             width: '100%', 
