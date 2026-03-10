@@ -9,34 +9,39 @@ const Home = () => {
 
   return (
     <div>
-      {/* Hero Image - Mobile Responsive */}
-      <div style={{ 
-        width: '100%', 
+      <div className="w-full bg-[#0a0a0a] flex justify-center items-center overflow-hidden">
+  {/* The Wrapper ensures the image never exceeds the screen width */}
+  <div className="w-full max-w-[1920px] relative">
+    <img 
+      src="/images/hero4.png" 
+      alt="Zayora Festive Collection"
+      className="w-full h-auto block" 
+      style={{ 
+        // Ensures the image fills the width while keeping its height natural
+        display: 'block',
+        width: '100%',
         height: 'auto',
-        maxHeight: '500px',
-        overflow: 'hidden'
-      }}>
-        <img 
-          src="/images/hero4.png"  // Path from public folder
-          alt="Women Fashion Collection"
-          style={{ 
-            width: '100%', 
-            height: '100%', 
-            objectFit: 'cover',
-            objectPosition: 'center'
-          }}
-        />
-      </div>
+        // Smoothly handles high-resolution screens
+        imageRendering: 'auto'
+      }}
+    />
+    
+    {/* Luxury Finishing: A subtle dark gradient at the bottom 
+        to blend the image into your website's dark background */}
+    <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+  </div>
+</div>
+      
 
       {/* Featured Products - Mobile Responsive */}
       <div className="container py-4 py-md-5">
         <h2 className="text-center mb-3 mb-md-5">Featured Products</h2>
-        
+
         {/* Responsive Grid */}
         <div className="row g-3 g-md-4">
           {featuredProducts.map(product => (
-            <div 
-              key={product.id} 
+            <div
+              key={product.id}
               className="col-6 col-md-4 col-lg-3"
             >
               <ProductCard product={product} />
@@ -46,8 +51,8 @@ const Home = () => {
 
         {/* View All Button - Mobile Responsive */}
         <div className="text-center mt-4 mt-md-5">
-          <Link 
-            to="/shop" 
+          <Link
+            to="/shop"
             className="btn btn-outline-dark btn-sm btn-md-lg"
             style={{
               padding: '0.5rem 1.5rem',
