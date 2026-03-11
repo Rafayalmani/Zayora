@@ -13,11 +13,11 @@ const Home = () => {
   {/* The Wrapper ensures the image never exceeds the screen width */}
   <div className="w-full max-w-[1920px] relative">
     <img 
-      src="public/images/hero4.png" 
+      src="/images/hero4.png" 
       alt="Zayora Festive Collection"
       className="w-full h-auto block" 
       style={{ 
-        // Ensures the image fills the width while keeping its height natural
+ 
         display: 'block',
         width: '100%',
         height: 'auto',
