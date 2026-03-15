@@ -1,135 +1,169 @@
-// src/components/Navbar.jsx (Updated with Logo)
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const { totalItems } = useCart();
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   return (
-    <motion.nav 
-      className="navbar navbar-expand-lg navbar-light bg-light"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="container">
-        {/* Logo and Brand */}
-        <NavLink className="navbar-brand d-flex align-items-center" to="/">
-          <img 
-            src="/logo.png" 
-            alt="SuitStudio" 
-            height="40" 
-            className="me-2"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.style.display = 'none';
-            }}
-          />
-          <span className="fw-bold" style={{ color: 'black' }}>Zayora</span>
+    <nav className="zayora-nav sticky-top bg-white border-bottom">
+      <div className="container nav-wrapper">
         
-        </NavLink>
-        
-        <div className="d-flex align-items-center order-lg-3">
-          {/* Mobile Cart Icon */}
-          <NavLink 
-            to="/cart" 
-            className="nav-link position-relative d-lg-none me-3"
-          >
-            <i className="bi bi-cart3 fs-5"></i>
-            {totalItems > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {totalItems}
-              </span>
-            )}
+        {/* 1. LEFT: Brand Identity */}
+        <div className="nav-section section-left">
+          <NavLink to="/" className="nav-logo">
+            ZAYORA
+          </NavLink>
+        </div>
+
+        {/* 2. CENTER: Slim Desktop Links */}
+        <div className="nav-section section-center d-none d-lg-flex">
+          <ul className="desktop-links">
+            <li><NavLink to="/" className="link-item">Home</NavLink></li>
+            <li><NavLink to="/shop" className="link-item">Shop</NavLink></li>
+            <li><NavLink to="/collections" className="link-item">Collections</NavLink></li>
+            <li><NavLink to="/about" className="link-item">About</NavLink></li>
+          </ul>
+        </div>
+
+        {/* 3. RIGHT: Actions */}
+        <div className="nav-section section-right">
+          <NavLink to="/cart" className="cart-btn">
+            <i className="bi bi-bag"></i>
+            {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
           </NavLink>
 
-          {/* Toggle Button */}
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
+          <button 
+            className={`mobile-toggler d-lg-none ${isOpen ? 'active' : ''}`} 
+            onClick={() => setIsOpen(!isOpen)}
           >
-            <span className="navbar-toggler-icon"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
           </button>
         </div>
-        
-        <div className="collapse navbar-collapse order-lg-2" id="navbarNav">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <NavLink 
-                className={({ isActive }) => 
-                  isActive ? 'nav-link active' : 'nav-link'
-                } 
-                to="/"
-                end
-              >
-                Home
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink 
-                className={({ isActive }) => 
-                  isActive ? 'nav-link active' : 'nav-link'
-                } 
-                to="/shop"
-              >
-                Shop
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink 
-                className={({ isActive }) => 
-                  isActive ? 'nav-link active' : 'nav-link'
-                } 
-                to="/new-arrivals"
-              >
-                New Arrivals
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink 
-                className={({ isActive }) => 
-                  isActive ? 'nav-link active' : 'nav-link'
-                } 
-                to="/sale"
-              >
-                <span className="text-danger">Sale</span>
-              </NavLink>
-            </li>
-          </ul>
-          
-          {/* Desktop Cart Icon */}
-          <ul className="navbar-nav d-none d-lg-block">
-            <li className="nav-item">
-              <NavLink 
-                className={({ isActive }) => 
-                  isActive ? 'nav-link active position-relative' : 'nav-link position-relative'
-                } 
-                to="/cart"
-              >
-                Cart
-                {totalItems > 0 && (
-                  <motion.span 
-                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {totalItems}
-                  </motion.span>
-                )}
-              </NavLink>
-            </li>
-          </ul>
-        </div>
       </div>
-    </motion.nav>
+
+      {/* MOBILE DRAWER */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            className="mobile-drawer d-lg-none"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+          >
+            <div className="mobile-links-wrapper">
+              <NavLink to="/" className="mobile-link">Home</NavLink>
+              <NavLink to="/shop" className="mobile-link">Shop</NavLink>
+              <NavLink to="/collections" className="mobile-link">Collections</NavLink>
+              <NavLink to="/about" className="mobile-link">About</NavLink>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style jsx>{`
+        /* SLIM HEIGHT SETTINGS */
+        .zayora-nav {
+          height: 60px; /* Reduced from 70px for mobile */
+          display: flex;
+          align-items: center;
+          z-index: 2000;
+          transition: all 0.3s ease;
+        }
+
+        @media (min-width: 992px) {
+          .zayora-nav { 
+            height: 70px; /* Slimmer desktop height (Reduced from 90px) */
+          } 
+        }
+
+        .nav-wrapper {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+        }
+
+        .nav-section { flex: 1; display: flex; align-items: center; }
+        .section-center { justify-content: center; }
+        .section-right { justify-content: flex-end; gap: 20px; }
+
+        .nav-logo {
+          font-family: 'Playfair Display', serif;
+          font-weight: 700;
+          text-decoration: none;
+          color: #000;
+          letter-spacing: 2px;
+          font-size: clamp(1rem, 3vw, 1.4rem); /* Refined sizing */
+        }
+
+        .desktop-links {
+          display: flex;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          gap: 35px; /* Balanced spacing */
+        }
+
+        .link-item {
+          text-decoration: none;
+          color: #444;
+          text-transform: uppercase;
+          font-size: 0.7rem; /* Smaller font for luxury feel */
+          font-weight: 500;
+          letter-spacing: 1.2px;
+          transition: 0.3s;
+        }
+
+        .link-item:hover, .link-item.active {
+          color: #000;
+        }
+
+        .cart-btn { font-size: 1.2rem; color: #000; position: relative; }
+        .cart-count {
+          position: absolute;
+          top: -4px;
+          right: -8px;
+          background: #000;
+          color: #fff;
+          font-size: 0.55rem;
+          padding: 1px 5px;
+          border-radius: 50%;
+        }
+
+        .mobile-toggler { background: none; border: none; display: flex; flex-direction: column; gap: 5px; }
+        .bar { width: 20px; height: 1.2px; background: #000; transition: 0.3s; }
+        .active .bar:nth-child(1) { transform: translateY(3.1px) rotate(45deg); }
+        .active .bar:nth-child(2) { transform: translateY(-3.1px) rotate(-45deg); }
+
+        .mobile-drawer {
+          position: absolute;
+          top: 60px;
+          left: 0;
+          width: 100%;
+          background: #fff;
+          border-bottom: 1px solid #eee;
+        }
+
+        .mobile-links-wrapper { display: flex; flex-direction: column; padding: 15px 20px; }
+        .mobile-link {
+          padding: 10px 0;
+          text-decoration: none;
+          color: #000;
+          text-transform: uppercase;
+          font-size: 0.8rem;
+          border-bottom: 1px solid #f9f9f9;
+        }
+      `}</style>
+    </nav>
   );
 };
 

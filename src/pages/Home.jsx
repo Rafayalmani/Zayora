@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard';
 import products from '../data/products';
 
 const Home = () => {
-  const featuredProducts = products.slice(0, 4);
+  const featuredProducts = products.slice(0, 8);
 
   return (
     <div>
