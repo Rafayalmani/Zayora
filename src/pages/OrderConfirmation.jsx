@@ -1,80 +1,66 @@
-// src/pages/OrderConfirmation.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
   const [orderDetails, setOrderDetails] = useState(null);
 
-  // Get order details from localStorage (saved during checkout)
   useEffect(() => {
-    try {
-      const savedOrder = localStorage.getItem('lastOrder');
-      if (savedOrder) {
-        setOrderDetails(JSON.parse(savedOrder));
-      }
-    } catch (error) {
-      console.error('Error loading order:', error);
-    }
+    const savedOrder = localStorage.getItem('lastOrder');
+    if (savedOrder) setOrderDetails(JSON.parse(savedOrder));
   }, []);
 
   return (
     <motion.div 
       className="py-5"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
     >
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-md-6">
-            <div className="card border-0 shadow-lg">
-              <div className="card-body text-center p-5">
-                
-                {/* Success Icon */}
-                <div className="bg-success text-white rounded-circle d-inline-flex p-4 mb-4">
-                  <i className="bi bi-check-lg" style={{ fontSize: '3rem' }}></i>
+          <div className="col-lg-7">
+            
+            {/* Header Section */}
+            <div className="text-center mb-5">
+              <i className="bi bi-bag-check" style={{ fontSize: '3rem' }}></i>
+              <h1 className="display-6 fw-bold mt-3 mb-2">Thank You for Your Order</h1>
+              <p className="text-muted">Your order <span className="fw-bold text-dark">#{orderId}</span> has been successfully placed.</p>
+            </div>
+
+            {/* Receipt Box */}
+            <div className="border border-dark p-4 p-md-5">
+              <h5 className="text-uppercase tracking-widest mb-4">Summary</h5>
+              
+              <div className="row mb-4">
+                <div className="col-6">
+                  <small className="text-muted text-uppercase d-block mb-1">Customer</small>
+                  <strong className="d-block">{orderDetails?.customer?.fullName || 'Valued Customer'}</strong>
                 </div>
-
-                {/* Order Confirmed Text */}
-                <h2 className="text-success mb-3">Order Confirmed!</h2>
-                
-                {/* Order ID */}
-                <div className="bg-light p-3 rounded mb-4">
-                  <p className="text-muted mb-1">Order ID</p>
-                  <h5 className="fw-bold">{orderId}</h5>
+                <div className="col-6">
+                  <small className="text-muted text-uppercase d-block mb-1">Date</small>
+                  <strong className="d-block">{new Date().toLocaleDateString()}</strong>
                 </div>
+              </div>
 
-                {/* Customer Details */}
-                {orderDetails && (
-                  <div className="text-start mb-4">
-                    <h6 className="mb-3">Customer Details</h6>
-                    
-                    <div className="mb-2">
-                      <small className="text-muted d-block">Name</small>
-                      <strong>{orderDetails.customer?.fullName || 'N/A'}</strong>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <small className="text-muted d-block">Email</small>
-                      <strong>{orderDetails.customer?.email || 'N/A'}</strong>
-                    </div>
-                  </div>
-                )}
+              <div className="bg-light p-3 mb-4">
+                <p className="small text-muted mb-0">
+                  <i className="bi bi-info-circle me-2"></i>
+                  A confirmation email has been sent to <strong>{orderDetails?.customer?.email}</strong> with your order details and delivery timeline.
+                </p>
+              </div>
 
-                {/* Email Confirmation Message */}
-                <div className="alert alert-success">
-                  <i className="bi bi-envelope-check me-2"></i>
-                  You will receive a confirmation email soon.
-                </div>
-
-                {/* Continue Shopping Button */}
-                <a href="/shop" className="btn btn-dark mt-3 px-5">
+              <div className="d-grid gap-2 mt-4">
+                <Link to="/shop" className="btn btn-dark py-3 rounded-0 text-uppercase tracking-widest fw-bold">
                   Continue Shopping
-                </a>
+                </Link>
+                <button className="btn btn-outline-dark py-3 rounded-0 text-uppercase tracking-widest fw-bold" onClick={() => window.print()}>
+                  Download Receipt
+                </button>
               </div>
             </div>
+
           </div>
         </div>
       </div>

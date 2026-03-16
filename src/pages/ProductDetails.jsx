@@ -1,5 +1,4 @@
-// src/pages/ProductDetails.jsx (Add popup)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
@@ -13,199 +12,159 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
   const { addToCart, totalAmount, totalItems } = useCart();
-
+  
+  // State for gallery
   const product = products.find(p => p.id === parseInt(id));
+  const [mainImage, setMainImage] = useState(product?.image);
 
-  if (!product) {
-    return (
-      <div className="py-5">
-        <div className="container text-center">
-          <h2>Product not found</h2>
-          <button className="btn btn-dark mt-3" onClick={() => navigate('/shop')}>
-            Back to Shop
-          </button>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (product) setMainImage(product.image);
+  }, [product]);
 
-  const handleQuantityChange = (change) => {
-    const newQuantity = quantity + change;
-    if (newQuantity >= 1 && newQuantity <= 10) {
-      setQuantity(newQuantity);
-    }
-  };
+  if (!product) return <div className="py-5 text-center"><h2>Product not found</h2></div>;
 
   const handleAddToCart = () => {
-    // Add product multiple times based on quantity
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
-    
-    // Show popup
+    for (let i = 0; i < quantity; i++) addToCart(product);
     setShowPopup(true);
-    
-    // Scroll to top to show popup
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <>
-      <motion.div 
-        className="py-5"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      <motion.div className="py-4 py-lg-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <div className="container">
-          {/* Breadcrumb */}
-          <nav aria-label="breadcrumb" className="mb-4">
-            <ol className="breadcrumb">
-              <li className="breadcrumb-item">
-                <Link to="/" className="text-decoration-none">Home</Link>
-              </li>
-              <li className="breadcrumb-item">
-                <Link to="/shop" className="text-decoration-none">Shop</Link>
-              </li>
-              <li className="breadcrumb-item active" aria-current="page">
-                {product.name}
-              </li>
-            </ol>
-          </nav>
+          <div className="row g-4">
+            
+            {/* 1. GALLERY SECTION (Multi-Image) */}
+            <div className="col-12 col-lg-7">
+              <div className="row g-2">
+                {/* Thumbnails (Desktop side, Mobile bottom) */}
+                <div className="col-12 col-md-2 order-2 order-md-1">
+                  <div className="d-flex d-md-block gap-2 overflow-auto">
+                    {[product.image, ...(product.gallery || [])].map((img, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`thumb-box mb-md-2 ${mainImage === img ? 'active' : ''}`}
+                        onClick={() => setMainImage(img)}
+                      >
+                        <img src={img} alt="thumbnail" className="img-fluid" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Main View - Fixed "Fitting" issue */}
+                <div className="col-12 col-md-10 order-1 order-md-2">
+                  <div className="main-img-container bg-white border">
+                    <img src={mainImage} alt={product.name} className="img-fluid full-view-img" />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          <div className="row g-5">
-            {/* Product Image */}
-           <div className="col-md-6">
-  <div className="card border-0 shadow-sm">
-    <div style={{ 
-      width: '100%', 
-      height: '600px', 
-      overflow: 'hidden',
-      backgroundColor: '#f8f9fa'
-    }}>
-      <img 
-        src={product.image} 
-        alt={product.name}
-        style={{ 
-          width: '100%', 
-          height: '100%', 
-          objectFit: 'cover',
-          objectPosition: 'center'
-        }}
-      />
+            {/* 2. PRODUCT INFO SECTION */}
+            <div className="col-12 col-lg-5">
+              <div className="sticky-lg-top" style={{ top: '100px' }}>
+                <h1 className="h2 fw-bold mb-2">{product.name}</h1>
+                <h3 className="h4 mb-4 text-dark">{formatPrice(product.price)}</h3>
+                
+                <p className="text-muted small mb-4" style={{ lineHeight: '1.8' }}>
+                  {product.description}
+                </p>
+
+                <div className="d-grid gap-3">
+                  <div className="d-flex align-items-center border p-2" style={{ width: 'fit-content' }}>
+                    <button className="btn btn-sm" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                    <span className="px-4 fw-bold">{quantity}</span>
+                    <button className="btn btn-sm" onClick={() => setQuantity(Math.min(10, quantity + 1))}>+</button>
+                  </div>
+
+                  <motion.button 
+                    className="btn btn-dark btn-lg rounded-0 w-100 py-3 text-uppercase"
+                    style={{ fontSize: '0.9rem', letterSpacing: '1px' }}
+                    onClick={handleAddToCart}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Add to Bag
+                  </motion.button>
+                </div>
+
+                {/* Shipping Details */}
+             <div className="mt-5 pt-4 border-top">
+  <div className="row g-3">
+    
+    {/* Shipping Policy */}
+    <div className="col-md-6">
+      <div className="d-flex align-items-start">
+        <i className="bi bi-truck fs-5 me-3 text-dark"></i>
+        <div>
+          <h6 className="mb-1 fw-bold">Shipping Rates</h6>
+          <p className="small text-muted mb-0">
+            Standard delivery across Pakistan. Rates calculated at checkout based on your city.
+          </p>
+        </div>
+      </div>
     </div>
+
+   
+
   </div>
 </div>
-
-            {/* Product Details */}
-            <div className="col-md-6">
-              <h1 className="mb-3">{product.name}</h1>
-              
-              <div className="mb-4">
-                <span className="display-6 fw-bold text-primary">
-                  {formatPrice(product.price)}
-                </span>
-              </div>
-
-              <div className="mb-4">
-                <p className="lead">{product.description}</p>
-              </div>
-
-              {/* Product Details List */}
-              <div className="mb-4">
-                <h5 className="mb-3">Product Details:</h5>
-                <ul className="list-unstyled">
-                  {product.details?.map((detail, index) => (
-                    <li key={index} className="mb-2">
-                      <i className="bi bi-check-circle-fill text-success me-2"></i>
-                      {detail}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Quantity Selector */}
-              <div className="mb-4">
-                <label htmlFor="quantity" className="form-label fw-bold mb-3">
-                  Quantity:
-                </label>
-                <div className="d-flex align-items-center">
-                  <motion.button 
-                    className="btn btn-outline-secondary"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1 || !product.inStock}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    -
-                  </motion.button>
-                  <span className="mx-3 min-width-50 text-center fs-5 fw-bold">
-                    {quantity}
-                  </span>
-                  <motion.button 
-                    className="btn btn-outline-secondary"
-                    onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= 10 || !product.inStock}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    +
-                  </motion.button>
-                  <span className="text-muted ms-3">
-                    (Max: 10)
-                  </span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="d-grid gap-3">
-                <motion.button 
-                  className="btn btn-dark btn-lg"
-                  onClick={handleAddToCart}
-                  disabled={!product.inStock}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <i className="bi bi-cart-plus me-2"></i>
-                  Add to Cart - {formatPrice(product.price * quantity)}
-                </motion.button>
-                
-                <Link to="/cart" className="btn btn-outline-dark btn-lg">
-                  <i className="bi bi-cart me-2"></i>
-                  View Cart
-                </Link>
-              </div>
-
-              {/* Additional Info */}
-              <div className="mt-4 pt-4 border-top">
-                <div className="row g-3">
-                  <div className="col-6">
-                    <div className="d-flex align-items-center text-muted">
-                      <i className="bi bi-truck me-2 fs-5"></i>
-                      <small>Free shipping on orders {formatPrice(5000)}+</small>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="d-flex align-items-center text-muted">
-                      <i className="bi bi-arrow-return-left me-2 fs-5"></i>
-                      <small>30-day easy returns</small>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* Cart Popup */}
-      <CartPopup 
-        isOpen={showPopup}
-        onClose={() => setShowPopup(false)}
-        product={product}
-        cartTotal={totalAmount}
-        cartCount={totalItems}
-      />
+      <CartPopup isOpen={showPopup} onClose={() => setShowPopup(false)} product={product} cartTotal={totalAmount} cartCount={totalItems} />
+
+      <style jsx>{`
+        /* Fixes the "Image not showing all" issue */
+        .main-img-container {
+          width: 100%;
+          height: 700px; /* Adjust this for your preferred desktop height */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .full-view-img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain; /* This ensures the whole image is visible */
+        }
+
+        .thumb-box {
+          cursor: pointer;
+          border: 1px solid #eee;
+          transition: 0.3s;
+          width: 80px;
+          height: 100px;
+          flex-shrink: 0;
+        }
+
+        .thumb-box img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .thumb-box.active {
+          border-color: #000;
+          opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+          .main-img-container {
+            height: 450px;
+          }
+          .thumb-box {
+            width: 60px;
+            height: 75px;
+          }
+        }
+      `}</style>
     </>
   );
 };

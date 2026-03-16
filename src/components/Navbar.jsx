@@ -28,7 +28,7 @@ const Navbar = () => {
           <ul className="desktop-links">
             <li><NavLink to="/" className="link-item">Home</NavLink></li>
             <li><NavLink to="/shop" className="link-item">Shop</NavLink></li>
-            <li><NavLink to="/collections" className="link-item">Collections</NavLink></li>
+           
             <li><NavLink to="/about" className="link-item">About</NavLink></li>
           </ul>
         </div>
@@ -62,7 +62,7 @@ const Navbar = () => {
             <div className="mobile-links-wrapper">
               <NavLink to="/" className="mobile-link">Home</NavLink>
               <NavLink to="/shop" className="mobile-link">Shop</NavLink>
-              <NavLink to="/collections" className="mobile-link">Collections</NavLink>
+             
               <NavLink to="/about" className="mobile-link">About</NavLink>
             </div>
           </motion.div>

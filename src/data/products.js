@@ -5,14 +5,9 @@ const products = [
     name: 'Peach Floral Lace Ensemble',
     price: 4000,
     description: 'A vibrant peach-toned 3-piece lawn suit featuring an intricate floral print with teal and magenta accents. Finished with delicate laser-cut lace detailing on the sleeves and hem for a feminine touch.',
-    details: [
-      'Shirt: Digitally printed lawn kameez with a dense floral and vine pattern.',
-      'Neckline: V-shaped neckline with contrast piping and button detailing.',
-      'Sleeves: Full sleeves featuring wide laser-cut lace cuffs.',
-      'Dupatta: Matching printed lawn dupatta with floral borders.',
-      'Trouser: Wide-leg cotton culottes in a matching peach shade with lace-edged hems.'
-    ],
+    
     image: "/images/1.jpeg",
+    gallery: ['/images/2.jpeg', '/images/3.jpeg'],
     category: 'dresses',
     subCategory: 'maxi-dresses',
     inStock: true

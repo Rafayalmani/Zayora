@@ -1,10 +1,10 @@
-// src/components/CartPopup.jsx (Mobile responsive)
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../utils/currencyFormatter';
 
 const CartPopup = ({ isOpen, onClose, product, cartTotal, cartCount }) => {
+  // Auto-close timer with progress bar sync
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
@@ -19,131 +19,97 @@ const CartPopup = ({ isOpen, onClose, product, cartTotal, cartCount }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="position-fixed top-0 start-0 w-100 h-100"
-            style={{ 
-              background: 'rgba(0,0,0,0.5)',
-              zIndex: 1040,
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
+        <motion.div
+          className="cart-popup-wrapper"
+          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+          style={{
+            position: 'fixed',
+            zIndex: 9999,
+            right: '20px',
+            bottom: '20px',
+            width: 'calc(100% - 40px)',
+            maxWidth: '380px',
+          }}
+        >
+          <div className="card border-0 shadow-2xl overflow-hidden shadow-dark">
+            {/* Minimal Progress Bar */}
+            <motion.div 
+              initial={{ width: '100%' }}
+              animate={{ width: '0%' }}
+              transition={{ duration: 4, ease: "linear" }}
+              style={{ height: '3px', backgroundColor: '#000', position: 'absolute', top: 0, left: 0 }}
+            />
 
-          {/* Popup - Mobile Responsive */}
-          <motion.div
-            className="position-fixed start-50 translate-middle-x"
-            style={{ 
-              zIndex: 1050, 
-              width: '90%',
-              maxWidth: '400px',
-              bottom: '20px',
-              top: 'auto'
-            }}
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25 }}
-          >
-            <div className="card border-0 shadow-lg">
-              <div className="card-header bg-success text-white py-2 py-md-3">
+            <div className="card-body p-4">
+              <div className="d-flex justify-content-between align-items-start mb-3">
                 <div className="d-flex align-items-center">
-                  <i className="bi bi-check-circle-fill me-2"></i>
-                  <h6 className="mb-0 flex-grow-1">Added to Cart!</h6>
-                  <button 
-                    type="button" 
-                    className="btn-close btn-close-white" 
-                    onClick={onClose}
-                    style={{ fontSize: '0.8rem' }}
-                  ></button>
+                   <div className="bg-black text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: '20px', height: '20px' }}>
+                      <i className="bi bi-check" style={{ fontSize: '14px' }}></i>
+                   </div>
+                   <span className="text-uppercase tracking-widest fw-bold small">Added to Bag</span>
+                </div>
+                <button onClick={onClose} className="btn-close small" style={{ fontSize: '0.7rem' }}></button>
+              </div>
+
+              <div className="d-flex align-items-center mb-4">
+                <div className="flex-shrink-0" style={{ width: '70px', height: '90px', backgroundColor: '#f5f5f5' }}>
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-100 h-100 object-fit-cover"
+                  />
+                </div>
+                <div className="ms-3 flex-grow-1 overflow-hidden">
+                  <h6 className="text-truncate mb-1 fw-bold">{product.name}</h6>
+                  <p className="text-muted small mb-1">Qty: 1</p>
+                  <p className="fw-bold mb-0">{formatPrice(product.price)}</p>
                 </div>
               </div>
 
-              <div className="card-body p-3">
-                {/* Product Info - Responsive */}
-                <div className="d-flex align-items-center mb-3">
-                  <div style={{ 
-                    width: '60px', 
-                    height: '60px', 
-                    overflow: 'hidden',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '6px',
-                    flexShrink: 0
-                  }}>
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </div>
-                  <div className="ms-3" style={{ minWidth: 0 }}>
-                    <h6 className="fw-bold mb-1" style={{
-                      fontSize: '0.9rem',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
-                      {product.name}
-                    </h6>
-                    <p className="text-primary fw-bold mb-0" style={{ fontSize: '0.9rem' }}>
-                      {formatPrice(product.price)}
-                    </p>
-                  </div>
+              <div className="border-top pt-3">
+                <div className="d-flex justify-content-between mb-3">
+                  <span className="text-muted small text-uppercase">Subtotal ({cartCount} items)</span>
+                  <span className="fw-bold">{formatPrice(cartTotal)}</span>
                 </div>
-
-                {/* Cart Summary - Responsive */}
-                <div className="bg-light p-2 rounded mb-3">
-                  <div className="d-flex justify-content-between mb-1">
-                    <span style={{ fontSize: '0.9rem' }}>Cart Total:</span>
-                    <span className="fw-bold" style={{ fontSize: '0.9rem' }}>{formatPrice(cartTotal)}</span>
+                
+                <div className="row g-2">
+                  <div className="col-6">
+                    <Link to="/cart" onClick={onClose} className="btn btn-outline-dark w-100 rounded-0 text-uppercase small py-2 fw-bold">
+                      View Bag
+                    </Link>
                   </div>
-                  <div className="d-flex justify-content-between">
-                    <span style={{ fontSize: '0.9rem' }}>Total Items:</span>
-                    <span className="fw-bold" style={{ fontSize: '0.9rem' }}>{cartCount}</span>
+                  <div className="col-6">
+                    <Link to="/checkout" onClick={onClose} className="btn btn-dark w-100 rounded-0 text-uppercase small py-2 fw-bold">
+                      Checkout
+                    </Link>
                   </div>
-                </div>
-
-                {/* Action Buttons - Responsive */}
-                <div className="d-flex gap-2">
-                  <Link 
-                    to="/cart" 
-                    className="btn btn-outline-primary flex-grow-1"
-                    onClick={onClose}
-                    style={{ fontSize: '0.9rem', padding: '0.5rem' }}
-                  >
-                    View Cart
-                  </Link>
-                  <Link 
-                    to="/checkout" 
-                    className="btn btn-success flex-grow-1"
-                    onClick={onClose}
-                    style={{ fontSize: '0.9rem', padding: '0.5rem' }}
-                  >
-                    Checkout
-                  </Link>
-                </div>
-
-                {/* Continue Shopping */}
-                <div className="text-center mt-2">
-                  <button 
-                    className="btn btn-link text-muted text-decoration-none p-0"
-                    onClick={onClose}
-                    style={{ fontSize: '0.85rem' }}
-                  >
-                    Continue Shopping
-                  </button>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </>
+          </div>
+
+          <style jsx>{`
+            .shadow-2xl {
+              box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }
+            .tracking-widest {
+              letter-spacing: 0.1em;
+            }
+            .object-fit-cover {
+              object-fit: cover;
+            }
+            @media (max-width: 576px) {
+              .cart-popup-wrapper {
+                right: 10px !important;
+                bottom: 10px !important;
+                left: 10px !important;
+                width: auto !important;
+              }
+            }
+          `}</style>
+        </motion.div>
       )}
     </AnimatePresence>
   );
