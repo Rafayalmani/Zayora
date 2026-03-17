@@ -16,11 +16,12 @@
     "crypto-js": "^4.2.0",
     "firebase": "^12.9.0",
     "formik": "^2.4.9",
-    "framer-motion": "^12.34.0",
+    "framer-motion": "^12.37.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.13.0",
     "react-scripts": "5.0.1",
+    "swiper": "^12.1.2",
     "web-vitals": "^2.1.4",
     "yup": "^1.7.1"
   },
